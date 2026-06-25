@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Line Service</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  color:#fff;
+  font-family:'Manrope',sans-serif;
+  min-height:100vh;
+  position:relative;
+  overflow-x:hidden;
+}
+
+.bg{
+  position:fixed;
+  inset:0;
+  background-image:url('/bg.jpg');
+  background-size:cover;
+  background-position:center 40%;
+  z-index:0;
+  filter:grayscale(20%) brightness(0.85);
+}
+.bg::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    160deg,
+    rgba(5,5,7,0.62) 0%,
+    rgba(5,5,7,0.45) 35%,
+    rgba(5,5,7,0.72) 70%,
+    rgba(5,5,7,0.97) 100%
+  );
+}
+
+.wrap{position:relative;z-index:1;}
+
+/* NAV */
+.nav{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:22px 32px;
+  border-bottom:0.5px solid rgba(255,255,255,0.08);
+}
+.logo{
+  font-family:'Playfair Display',serif;
+  font-size:14px;font-weight:400;
+  letter-spacing:5px;color:#fff;
+  text-transform:uppercase;
+}
+.logo em{color:#a8b8c8;font-style:normal;}
+.phone-btn{
+  background:transparent;
+  border:0.5px solid rgba(168,184,200,0.4);
+  color:rgba(255,255,255,0.8);
+  padding:8px 22px;border-radius:1px;
+  font-size:10px;font-weight:500;cursor:pointer;
+  font-family:'Manrope',sans-serif;
+  letter-spacing:2px;text-transform:uppercase;
+  transition:all 0.25s;
+}
+.phone-btn:hover{
+  background:rgba(168,184,200,0.15);
+  border-color:rgba(168,184,200,0.7);
+  color:#fff;
+}
+
+/* HERO */
+.hero{padding:52px 32px 0;text-align:center;}
+
+.city-line{
+  font-size:10px;letter-spacing:5px;
+  color:#a8b8c8;text-transform:uppercase;
+  margin-bottom:22px;font-weight:400;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.city-line::before{display:none;}
+
+.headline{
+  font-family:'Playfair Display',serif;
+  font-size:52px;font-weight:400;
+  line-height:1.05;color:#fff;
+  margin-bottom:18px;
+  letter-spacing:-0.5px;
+}
+.headline em{font-style:italic;color:#a8b8c8;}
+
+.sub{
+  font-size:10px;color:rgba(255,255,255,0.35);
+  font-weight:400;letter-spacing:3px;
+  margin-bottom:44px;text-transform:uppercase;
+}
+.sub span{margin:0 10px;opacity:0.3;}
+
+.divider{
+  height:0.5px;
+  background:linear-gradient(to right, rgba(168,184,200,0.3), transparent);
+  margin-bottom:28px;
+}
+
+/* QUIZ */
+.quiz{
+  background:rgba(8,8,10,0.65);
+  border-radius:2px;
+  overflow:hidden;
+  border:0.5px solid rgba(168,184,200,0.15);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+}
+.quiz-top{
+  padding:14px 20px;
+  display:flex;align-items:center;gap:12px;
+  border-bottom:0.5px solid rgba(255,255,255,0.06);
+  background:rgba(255,255,255,0.02);
+}
+.avatar{
+  width:32px;height:32px;border-radius:50%;
+  background:rgba(168,184,200,0.15);
+  border:0.5px solid rgba(168,184,200,0.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0;
+}
+.quiz-name{font-size:11px;font-weight:500;color:rgba(255,255,255,0.85);letter-spacing:0.5px;}
+.quiz-status{font-size:10px;color:rgba(255,255,255,0.3);margin-top:2px;letter-spacing:0.5px;}
+.dot{
+  width:6px;height:6px;border-radius:50%;
+  background:#a8b8c8;margin-left:auto;flex-shrink:0;
+  box-shadow:0 0 6px rgba(168,184,200,0.5);
+}
+
+.chat{
+  padding:18px;min-height:180px;
+  display:flex;flex-direction:column;gap:10px;
+}
+.msg{
+  max-width:84%;padding:11px 15px;
+  font-size:13px;line-height:1.65;
+  white-space:pre-line;
+}
+.bot{
+  background:rgba(255,255,255,0.05);
+  color:rgba(255,255,255,0.82);
+  align-self:flex-start;
+  border:0.5px solid rgba(255,255,255,0.08);
+  border-radius:1px 10px 10px 10px;
+}
+.user{
+  background:rgba(168,184,200,0.18);
+  color:#fff;
+  align-self:flex-end;
+  border:0.5px solid rgba(168,184,200,0.3);
+  border-radius:10px 1px 10px 10px;
+  font-weight:400;
+}
+
+.qbtns{
+  display:flex;flex-wrap:wrap;gap:6px;
+  padding:12px 18px;
+  border-top:0.5px solid rgba(255,255,255,0.05);
+}
+.qbtn{
+  background:transparent;
+  border:0.5px solid rgba(168,184,200,0.25);
+  color:rgba(168,184,200,0.85);
+  padding:7px 14px;border-radius:1px;
+  font-size:11px;cursor:pointer;
+  font-family:'Manrope',sans-serif;
+  letter-spacing:0.5px;
+  transition:all 0.15s;
+}
+.qbtn:hover{
+  background:rgba(168,184,200,0.12);
+  border-color:rgba(168,184,200,0.5);
+  color:#fff;
+}
+
+.inp-row{
+  display:flex;gap:8px;padding:12px 16px;
+  border-top:0.5px solid rgba(255,255,255,0.05);
+}
+.cinp{
+  flex:1;background:rgba(255,255,255,0.04);
+  border:0.5px solid rgba(255,255,255,0.1);
+  border-radius:1px;
+  padding:9px 16px;font-size:12px;
+  color:#fff;outline:none;
+  font-family:'Manrope',sans-serif;
+  letter-spacing:0.3px;
+  transition:border-color 0.2s;
+}
+.cinp::placeholder{color:rgba(255,255,255,0.2);}
+.cinp:focus{border-color:rgba(168,184,200,0.4);}
+.sbtn{
+  background:rgba(168,184,200,0.15);
+  border:0.5px solid rgba(168,184,200,0.3);
+  border-radius:1px;width:38px;height:38px;
+  flex-shrink:0;cursor:pointer;
+  color:#fff;font-size:16px;
+  transition:all 0.2s;
+}
+.sbtn:hover{background:rgba(168,184,200,0.25);}
+
+/* TRUST */
+.trust{
+  display:flex;justify-content:space-between;
+  padding:28px 32px;
+  border-top:0.5px solid rgba(168,184,200,0.1);
+  margin-top:28px;
+}
+.ti .n{
+  font-family:'Playfair Display',serif;
+  font-size:26px;font-weight:400;
+  color:rgba(255,255,255,0.7);
+}
+.ti .l{
+  font-size:9px;color:rgba(255,255,255,0.25);
+  letter-spacing:2.5px;margin-top:5px;
+  text-transform:uppercase;
+}
+
+.footer{
+  text-align:center;padding:16px;
+  font-size:9px;letter-spacing:3px;
+  color:rgba(255,255,255,0.15);
+  text-transform:uppercase;
+  border-top:0.5px solid rgba(255,255,255,0.04);
+}
+
+/* TYPING */
+.typing{display:flex;gap:4px;align-items:center;}
+.typing span{
+  width:4px;height:4px;
+  background:rgba(168,184,200,0.5);
+  border-radius:50%;
+  animation:bl 1.2s infinite;
+}
+.typing span:nth-child(2){animation-delay:.2s;}
+.typing span:nth-child(3){animation-delay:.4s;}
+@keyframes bl{0%,80%,100%{opacity:.2}40%{opacity:1}}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="wrap">
+
+<nav class="nav">
+  <div class="logo">Line <em>·</em> Service</div>
+  <button class="phone-btn">Зателефонувати</button>
+</nav>
+
+<div class="hero">
+  <div class="city-line" id="city-line">Київ · Цілодобово</div>
+  <h1 class="headline">Сантехнік,<br>який приїде<br><em>за 30 хвилин.</em></h1>
+  <p class="sub">Аварійний виїзд <span>·</span> Встановлення <span>·</span> Ремонт</p>
+  <div class="divider"></div>
+
+  <div class="quiz">
+    <div class="quiz-top">
+      <div class="avatar">🔧</div>
+      <div>
+        <div class="quiz-name">Line Service · AI-консультант</div>
+        <div class="quiz-status">Відповідає миттєво</div>
+      </div>
+      <div class="dot"></div>
+    </div>
+
+    <div class="chat" id="chat">
+      <div class="msg bot">Привіт 👋 Розкажіть що сталось — я зорієнтую по ціні та часу виїзду.</div>
+    </div>
+
+    <div class="qbtns" id="qb">
+      <button class="qbtn" onclick="q('🚿 Засор труби')">🚿 Засор</button>
+      <button class="qbtn" onclick="q('💧 Течія крана')">💧 Течія</button>
+      <button class="qbtn" onclick="q('🚨 Аварія')">🚨 Аварія</button>
+      <button class="qbtn" onclick="q('🔩 Встановлення')">🔩 Встановлення</button>
+    </div>
+
+    <div class="inp-row">
+      <input class="cinp" id="inp" placeholder="Або опишіть проблему..." onkeydown="if(event.key==='Enter')send()" />
+      <button class="sbtn" onclick="send()">→</button>
+    </div>
+  </div>
+</div>
+
+<div class="trust">
+  <div class="ti"><div class="n">2 300+</div><div class="l">замовлень</div></div>
+  <div class="ti"><div class="n">30 хв</div><div class="l">середній виїзд</div></div>
+  <div class="ti"><div class="n">24/7</div><div class="l">цілодобово</div></div>
+</div>
+
+<div class="footer">Line Service © 2024 · Київ · Одеса</div>
+</div>
+
+<script>
+const chat = document.getElementById('chat');
+const inp  = document.getElementById('inp');
+const qb   = document.getElementById('qb');
+
+let step = 0;
+let currentCity = 'Київ';
+const lead = { problem: '', urgency: '', district: '', name: '', phone: '' };
+
+function addMsg(t, u) {
+  const d = document.createElement('div');
+  d.className = 'msg ' + (u ? 'user' : 'bot');
+  d.textContent = t;
+  chat.appendChild(d);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function showTyping() {
+  const d = document.createElement('div');
+  d.className = 'msg bot'; d.id = 'typ';
+  d.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
+  chat.appendChild(d); chat.scrollTop = chat.scrollHeight;
+}
+
+function rmTyp() { const t = document.getElementById('typ'); if (t) t.remove(); }
+
+function setQ(items, field, ns) {
+  qb.innerHTML = '';
+  items.forEach(t => {
+    const b = document.createElement('button');
+    b.className = 'qbtn'; b.textContent = t;
+    b.onclick = () => {
+      qb.innerHTML = '';
+      addMsg(t, true);
+      if (field) lead[field] = t;
+      step = ns;
+      botReply();
+    };
+    qb.appendChild(b);
+  });
+}
+
+const kyivDistricts   = ['Шевченківський','Печерський','Подільський','Оболонський','Дарницький','Деснянський','Дніпровський','Голосіївський','Святошинський','Солом\'янський'];
+const odesaDistricts  = ['Приморський','Київський','Малиновський','Суворовський','Хаджибейський','Центр'];
+
+function getDistricts() {
+  return currentCity === 'Одеса' ? odesaDistricts : kyivDistricts;
+}
+
+async function submitLead() {
+  try {
+    const res = await fetch('/api/lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...lead, city: currentCity }),
+    });
+    return (await res.json()).ok;
+  } catch (e) {
+    console.error('[lead submit]', e);
+    return false;
+  }
+}
+
+function botReply() {
+  showTyping();
+  setTimeout(async () => {
+    rmTyp();
+    if (step === 2) {
+      addMsg('В якому районі ви знаходитесь?', false);
+      setQ(getDistricts(), 'district', 3);
+    } else if (step === 5) {
+      addMsg('⏳ Шукаю найближчого спеціаліста у вашому районі...', false);
+      qb.innerHTML = '';
+      await submitLead();
+      setTimeout(() => {
+        showTyping();
+        setTimeout(() => {
+          rmTyp();
+          addMsg('✅ Знайдено! Передаю вашу заявку найближчому майстру.\nВін зателефонує вам найближчим часом.\nОрієнтовна вартість: 500–900 грн.', false);
+        }, 2000);
+      }, 500);
+    } else {
+      const msgs = {
+        1: 'Наскільки термінова ситуація?',
+        3: 'Як вас звати?',
+        4: 'Ваш номер телефону? 📞',
+      };
+      addMsg(msgs[step] || '', false);
+      if (step === 1) setQ(['🚨 Терміново — зараз', '🕐 Сьогодні', '📅 Можна завтра'], 'urgency', 2);
+      else qb.innerHTML = '';
+    }
+  }, 900);
+}
+
+function q(t) {
+  qb.innerHTML = '';
+  addMsg(t, true);
+  lead.problem = t;
+  step = 1;
+  botReply();
+}
+
+function send() {
+  const t = inp.value.trim(); if (!t) return;
+  if (step === 4) {
+    if (t.replace(/\D/g, '').length < 10) {
+      inp.style.borderColor = 'rgba(255,80,80,0.5)';
+      setTimeout(() => inp.style.borderColor = '', 1200);
+      return;
+    }
+  }
+  inp.value = '';
+  if (step === 0) { q(t); return; }
+  addMsg(t, true);
+  if (step === 3) lead.name = t;
+  if (step === 4) lead.phone = t;
+  step++;
+  if (step > 5) return;
+  botReply();
+}
+
+fetch('https://ipapi.co/json/')
+  .then(r => r.json())
+  .then(d => {
+    const c = (d.city || '').toLowerCase();
+    if (c.includes('odesa') || c.includes('одес')) {
+      document.getElementById('city-line').textContent = 'Одеса · Цілодобово';
+      currentCity = 'Одеса';
+    }
+  }).catch(() => {});
+</script>
+</body>
+</html>
