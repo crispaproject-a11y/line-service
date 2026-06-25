@@ -212,7 +212,7 @@ body{
   border-radius:8px;width:40px;height:40px;
   flex-shrink:0;cursor:pointer;
   font-size:17px;
-  display:none;
+  display:flex;align-items:center;justify-content:center;
   transition:all 0.2s;
 }
 .mbtn:hover{background:#222;border-color:rgba(255,255,255,0.2);}
@@ -376,6 +376,7 @@ function formatPhone(raw) {
 function toggleVoice() {
   if (isRecording) { recognition.stop(); return; }
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { inp.placeholder = 'Голос не підтримується цим браузером'; return; }
   recognition = new SR();
   recognition.lang = 'uk-UA';
   recognition.continuous = false;
@@ -396,7 +397,7 @@ function enterPhoneMode() {
   inp.setAttribute('inputmode', 'tel');
   inp.classList.add('phone-mode');
   inp.value = '+38';
-  if (hasSpeech) document.getElementById('mbtn').style.display = 'none';
+  document.getElementById('mbtn').style.display = 'none';
   phoneInputHandler = () => {
     const f = formatPhone(inp.value);
     if (inp.value !== f) inp.value = f;
@@ -423,7 +424,7 @@ function exitPhoneMode() {
     inp.removeEventListener('input', phoneInputHandler);
     phoneInputHandler = null;
   }
-  if (hasSpeech) document.getElementById('mbtn').style.display = '';
+  document.getElementById('mbtn').style.display = '';
 }
 
 function addMsg(t, u) {
@@ -579,8 +580,6 @@ function send() {
   if (step > 5) return;
   botReply();
 }
-
-if (hasSpeech) document.getElementById('mbtn').style.display = '';
 
 fetch('https://ipapi.co/json/')
   .then(r => r.json())
