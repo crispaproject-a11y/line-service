@@ -154,6 +154,16 @@ body{
   border-color:rgba(255,255,255,0.22);
   color:#fff;
 }
+.saved-hint{
+  width:100%;
+  text-align:left;
+  border-color:rgba(255,255,255,0.2);
+  background:rgba(255,255,255,0.04);
+  color:rgba(255,255,255,0.9);
+  padding:10px 14px;
+  font-size:11px;
+  line-height:1.5;
+}
 
 .inp-row{
   display:flex;gap:8px;padding:12px 14px;
@@ -323,6 +333,15 @@ let currentCity = 'Київ';
 const lead = { problem: '', urgency: '', district: '', name: '', phone: '' };
 let phoneInputHandler = null;
 
+let savedContact = null;
+try {
+  const _raw = localStorage.getItem('ls_contact');
+  if (_raw) {
+    const _p = JSON.parse(_raw);
+    if (_p.name && _p.phone) savedContact = _p;
+  }
+} catch (e) {}
+
 function formatPhone(raw) {
   let d = raw.replace(/\D/g, '');
   if (d.length === 0) return '+38';
@@ -438,6 +457,7 @@ function botReply() {
       addMsg('⏳ Шукаю найближчого спеціаліста у вашому районі...', false);
       qb.innerHTML = '';
       await submitLead();
+      try { localStorage.setItem('ls_contact', JSON.stringify({ name: lead.name, phone: lead.phone })); } catch (e) {}
       setTimeout(() => {
         showTyping();
         setTimeout(() => {
@@ -454,6 +474,22 @@ function botReply() {
       addMsg(msgs[step] || '', false);
       if (step === 1) setQ(['🚨 Терміново — зараз', '🕐 Сьогодні', '📅 Можна завтра'], 'urgency', 2);
       else if (step === 4) enterPhoneMode();
+      else if (step === 3 && savedContact) {
+        qb.innerHTML = '';
+        const hint = document.createElement('button');
+        hint.className = 'qbtn saved-hint';
+        hint.textContent = `👤 Використати збережені дані?\n${savedContact.name} · ${savedContact.phone}`;
+        hint.onclick = () => {
+          qb.innerHTML = '';
+          addMsg(savedContact.name, true);
+          addMsg(savedContact.phone, true);
+          lead.name = savedContact.name;
+          lead.phone = savedContact.phone;
+          step = 5;
+          botReply();
+        };
+        qb.appendChild(hint);
+      }
       else qb.innerHTML = '';
     }
   }, 900);
