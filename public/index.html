@@ -289,6 +289,7 @@ body{
       <button class="qbtn" onclick="q('💧 Течія крана')">💧 Течія</button>
       <button class="qbtn" onclick="q('🚨 Аварія')">🚨 Аварія</button>
       <button class="qbtn" onclick="q('🔩 Встановлення')">🔩 Встановлення</button>
+      <button class="qbtn" onclick="qRepair()">🔧 Ремонт</button>
     </div>
 
     <div class="inp-row">
@@ -407,6 +408,29 @@ function q(t) {
   lead.problem = t;
   step = 1;
   botReply();
+}
+
+function qRepair() {
+  qb.innerHTML = '';
+  addMsg('🔧 Ремонт', true);
+  showTyping();
+  setTimeout(() => {
+    rmTyp();
+    addMsg('Що саме потрібно відремонтувати?', false);
+    qb.innerHTML = '';
+    ['🚿 Кран', '🚽 Зливний бачок', '🚿 Душ', '🔧 Інше'].forEach(t => {
+      const b = document.createElement('button');
+      b.className = 'qbtn'; b.textContent = t;
+      b.onclick = () => {
+        qb.innerHTML = '';
+        addMsg(t, true);
+        lead.problem = '🔧 Ремонт — ' + t;
+        step = 1;
+        botReply();
+      };
+      qb.appendChild(b);
+    });
+  }, 900);
 }
 
 function send() {
