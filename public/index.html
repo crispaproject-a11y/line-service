@@ -206,6 +206,21 @@ body{
   letter-spacing:1.5px;
   padding:10px 14px;
 }
+.mbtn{
+  background:#1a1a1a;
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:8px;width:40px;height:40px;
+  flex-shrink:0;cursor:pointer;
+  font-size:17px;
+  display:none;
+  transition:all 0.2s;
+}
+.mbtn:hover{background:#222;border-color:rgba(255,255,255,0.2);}
+.mbtn.recording{
+  background:rgba(239,68,68,0.12);
+  border-color:rgba(239,68,68,0.5);
+  animation:mic-pulse 1.2s ease-in-out infinite;
+}
 .sbtn{
   background:#fff;border:none;
   border-radius:8px;width:40px;height:40px;
@@ -233,6 +248,10 @@ body{
 .typing span:nth-child(2){animation-delay:.2s;}
 .typing span:nth-child(3){animation-delay:.4s;}
 @keyframes bl{0%,80%,100%{opacity:.2}40%{opacity:1}}
+@keyframes mic-pulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.35);}
+  50%{box-shadow:0 0 0 7px rgba(239,68,68,0);}
+}
 
 /* MOBILE */
 @media(max-width:430px){
@@ -257,6 +276,7 @@ body{
   .qbtn{font-size:13px;padding:10px 16px;}
   .inp-row{padding:10px 12px;gap:6px;}
   .cinp{font-size:16px;padding:9px 12px;}
+  .mbtn{width:36px;height:36px;font-size:15px;}
   .sbtn{width:36px;height:36px;font-size:16px;}
 }
 
@@ -304,6 +324,7 @@ body{
 
     <div class="inp-row">
       <input class="cinp" id="inp" placeholder="Або опишіть проблему..." onkeydown="if(event.key==='Enter')send()" />
+      <button class="mbtn" id="mbtn" onclick="toggleVoice()">🎤</button>
       <button class="sbtn" onclick="send()">→</button>
     </div>
   </div>
@@ -321,6 +342,9 @@ let step = 0;
 let currentCity = 'Київ';
 const lead = { problem: '', urgency: '', district: '', name: '', phone: '' };
 let phoneInputHandler = null;
+let recognition = null;
+let isRecording = false;
+const hasSpeech = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
 
 let savedContact = null;
 try {
@@ -349,10 +373,30 @@ function formatPhone(raw) {
   return out;
 }
 
+function toggleVoice() {
+  if (isRecording) { recognition.stop(); return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.lang = 'uk-UA';
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  const mbtn = document.getElementById('mbtn');
+  recognition.onstart  = () => { isRecording = true;  mbtn.classList.add('recording'); };
+  recognition.onresult = (e) => {
+    let t = '';
+    for (let i = 0; i < e.results.length; i++) t += e.results[i][0].transcript;
+    inp.value = t;
+  };
+  recognition.onend    = () => { isRecording = false; mbtn.classList.remove('recording'); recognition = null; };
+  recognition.onerror  = (e) => { isRecording = false; mbtn.classList.remove('recording'); recognition = null; console.warn('[voice]', e.error); };
+  recognition.start();
+}
+
 function enterPhoneMode() {
   inp.setAttribute('inputmode', 'tel');
   inp.classList.add('phone-mode');
   inp.value = '+38';
+  if (hasSpeech) document.getElementById('mbtn').style.display = 'none';
   phoneInputHandler = () => {
     const f = formatPhone(inp.value);
     if (inp.value !== f) inp.value = f;
@@ -379,6 +423,7 @@ function exitPhoneMode() {
     inp.removeEventListener('input', phoneInputHandler);
     phoneInputHandler = null;
   }
+  if (hasSpeech) document.getElementById('mbtn').style.display = '';
 }
 
 function addMsg(t, u) {
@@ -534,6 +579,8 @@ function send() {
   if (step > 5) return;
   botReply();
 }
+
+if (hasSpeech) document.getElementById('mbtn').style.display = '';
 
 fetch('https://ipapi.co/json/')
   .then(r => r.json())
