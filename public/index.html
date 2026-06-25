@@ -407,6 +407,7 @@ function toggleVoice() {
     let t = '';
     for (let i = 0; i < e.results.length; i++) t += e.results[i][0].transcript;
     inp.value = t;
+    autoResize(inp);
   };
   recognition.onend    = () => { isRecording = false; mbtn.classList.remove('recording'); recognition = null; };
   recognition.onerror  = (e) => { isRecording = false; mbtn.classList.remove('recording'); recognition = null; console.warn('[voice]', e.error); };
@@ -430,7 +431,7 @@ function enterPhoneMode() {
     b.onclick = async () => {
       try {
         const [c] = await navigator.contacts.select(['tel'], { multiple: false });
-        if (c?.tel?.length) inp.value = formatPhone(c.tel[0]);
+        if (c?.tel?.length) { inp.value = formatPhone(c.tel[0]); autoResize(inp); }
       } catch (e) {}
     };
     qb.appendChild(b);
