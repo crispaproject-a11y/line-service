@@ -216,14 +216,15 @@ body{
   border:1px solid rgba(255,255,255,0.1);
   border-radius:8px;width:40px;height:40px;
   flex-shrink:0;cursor:pointer;
-  font-size:17px;
+  color:rgba(255,255,255,0.65);
   display:flex;align-items:center;justify-content:center;
   transition:all 0.2s;
 }
-.mbtn:hover{background:#222;border-color:rgba(255,255,255,0.2);}
+.mbtn:hover{background:#222;border-color:rgba(255,255,255,0.2);color:#fff;}
 .mbtn.recording{
   background:rgba(239,68,68,0.12);
   border-color:rgba(239,68,68,0.5);
+  color:#ef4444;
   animation:mic-pulse 1.2s ease-in-out infinite;
 }
 .sbtn{
@@ -281,7 +282,8 @@ body{
   .qbtn{font-size:13px;padding:10px 16px;}
   .inp-row{padding:10px 12px;gap:6px;}
   .cinp{font-size:16px;padding:9px 12px;}
-  .mbtn{width:36px;height:36px;font-size:15px;}
+  .mbtn{width:36px;height:36px;}
+  .mbtn svg{width:16px;height:16px;}
   .sbtn{width:36px;height:36px;font-size:16px;}
 }
 
@@ -329,7 +331,14 @@ body{
 
     <div class="inp-row">
       <textarea class="cinp" id="inp" rows="1" placeholder="Або опишіть проблему..." oninput="autoResize(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send();}"></textarea>
-      <button class="mbtn" id="mbtn" onclick="toggleVoice()">🎤</button>
+      <button class="mbtn" id="mbtn" onclick="toggleVoice()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" y1="19" x2="12" y2="22"/>
+          <line x1="8" y1="22" x2="16" y2="22"/>
+        </svg>
+      </button>
       <button class="sbtn" onclick="send()">→</button>
     </div>
   </div>
