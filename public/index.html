@@ -126,7 +126,7 @@ body{
 .chat{
   padding:18px;
   flex:1;
-  min-height:0;
+  min-height:140px;
   overflow-y:auto;
   display:flex;flex-direction:column;gap:10px;
   background:#0d0d0d;
@@ -135,6 +135,8 @@ body{
   max-width:84%;padding:11px 15px;
   font-size:13px;line-height:1.65;
   white-space:pre-line;font-weight:400;
+  word-break:break-word;overflow-wrap:break-word;
+  min-width:0;
 }
 .bot{
   background:#1a1a1a;
@@ -167,6 +169,9 @@ body{
   font-size:14px;font-weight:500;cursor:pointer;
   font-family:'Inter',sans-serif;
   transition:all 0.15s;
+  -webkit-appearance:none;appearance:none;
+  flex:0 0 auto;
+  width:auto;
 }
 .qbtn:hover{
   background:#222;
@@ -182,6 +187,7 @@ body{
   padding:10px 14px;
   font-size:11px;
   line-height:1.5;
+  white-space:pre-line;
 }
 
 .inp-row{
@@ -257,6 +263,12 @@ body{
 @keyframes mic-pulse{
   0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.35);}
   50%{box-shadow:0 0 0 7px rgba(239,68,68,0);}
+}
+
+/* DESKTOP */
+@media(min-width:768px){
+  .quiz{max-width:480px;margin:0 auto;}
+  .chat{min-height:300px;}
 }
 
 /* MOBILE */
