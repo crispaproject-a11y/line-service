@@ -171,6 +171,11 @@ body{
 }
 .cinp::placeholder{color:rgba(255,255,255,0.2);}
 .cinp:focus{border-color:rgba(255,255,255,0.2);}
+.cinp.phone-mode{
+  font-size:24px;font-weight:500;
+  letter-spacing:1.5px;
+  padding:10px 14px;
+}
 .sbtn{
   background:#fff;border:none;
   border-radius:8px;width:40px;height:40px;
@@ -316,6 +321,57 @@ const qb   = document.getElementById('qb');
 let step = 0;
 let currentCity = 'Київ';
 const lead = { problem: '', urgency: '', district: '', name: '', phone: '' };
+let phoneInputHandler = null;
+
+function formatPhone(raw) {
+  let d = raw.replace(/\D/g, '');
+  if (d.length === 0) return '+38';
+  if (d.length <= 2 && '380'.startsWith(d)) return '+' + d;
+  if (!d.startsWith('380')) {
+    if (d.startsWith('80'))       d = '3' + d;
+    else if (d.startsWith('0'))   d = '38' + d;
+    else if (!d.startsWith('38')) d = '38' + d;
+  }
+  d = d.slice(0, 12);
+  let out = '+' + d.slice(0, 3);
+  if (d.length > 3)  out += ' ' + d.slice(3, 5);
+  if (d.length > 5)  out += ' ' + d.slice(5, 8);
+  if (d.length > 8)  out += ' ' + d.slice(8, 10);
+  if (d.length > 10) out += ' ' + d.slice(10, 12);
+  return out;
+}
+
+function enterPhoneMode() {
+  inp.setAttribute('inputmode', 'tel');
+  inp.classList.add('phone-mode');
+  inp.value = '+38';
+  phoneInputHandler = () => {
+    const f = formatPhone(inp.value);
+    if (inp.value !== f) inp.value = f;
+  };
+  inp.addEventListener('input', phoneInputHandler);
+  qb.innerHTML = '';
+  if (navigator.contacts && typeof navigator.contacts.select === 'function') {
+    const b = document.createElement('button');
+    b.className = 'qbtn'; b.textContent = '📱 Поділитися контактом';
+    b.onclick = async () => {
+      try {
+        const [c] = await navigator.contacts.select(['tel'], { multiple: false });
+        if (c?.tel?.length) inp.value = formatPhone(c.tel[0]);
+      } catch (e) {}
+    };
+    qb.appendChild(b);
+  }
+}
+
+function exitPhoneMode() {
+  inp.removeAttribute('inputmode');
+  inp.classList.remove('phone-mode');
+  if (phoneInputHandler) {
+    inp.removeEventListener('input', phoneInputHandler);
+    phoneInputHandler = null;
+  }
+}
 
 function addMsg(t, u) {
   const d = document.createElement('div');
@@ -397,6 +453,7 @@ function botReply() {
       };
       addMsg(msgs[step] || '', false);
       if (step === 1) setQ(['🚨 Терміново — зараз', '🕐 Сьогодні', '📅 Можна завтра'], 'urgency', 2);
+      else if (step === 4) enterPhoneMode();
       else qb.innerHTML = '';
     }
   }, 900);
@@ -441,6 +498,7 @@ function send() {
       setTimeout(() => inp.style.borderColor = '', 1200);
       return;
     }
+    exitPhoneMode();
   }
   inp.value = '';
   if (step === 0) { q(t); return; }
