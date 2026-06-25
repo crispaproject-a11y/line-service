@@ -189,6 +189,7 @@ body{
   border-top:1px solid rgba(255,255,255,0.05);
   background:#111;
   flex-shrink:0;
+  align-items:flex-end;
 }
 .cinp{
   flex:1;background:#181818;
@@ -198,6 +199,10 @@ body{
   color:#fff;outline:none;
   font-family:'Inter',sans-serif;
   transition:border-color 0.2s;
+  resize:none;
+  overflow-y:auto;
+  max-height:120px;
+  line-height:1.5;
 }
 .cinp::placeholder{color:rgba(255,255,255,0.2);}
 .cinp:focus{border-color:rgba(255,255,255,0.2);}
@@ -323,7 +328,7 @@ body{
     </div>
 
     <div class="inp-row">
-      <input class="cinp" id="inp" placeholder="Або опишіть проблему..." onkeydown="if(event.key==='Enter')send()" />
+      <textarea class="cinp" id="inp" rows="1" placeholder="Або опишіть проблему..." oninput="autoResize(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send();}"></textarea>
       <button class="mbtn" id="mbtn" onclick="toggleVoice()">🎤</button>
       <button class="sbtn" onclick="send()">→</button>
     </div>
@@ -343,6 +348,11 @@ let currentCity = 'Київ';
 const lead = { problem: '', urgency: '', district: '', name: '', phone: '' };
 let phoneInputHandler = null;
 let recognition = null;
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
 let isRecording = false;
 const hasSpeech = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
 
@@ -396,7 +406,7 @@ function toggleVoice() {
 function enterPhoneMode() {
   inp.setAttribute('inputmode', 'tel');
   inp.classList.add('phone-mode');
-  inp.value = '+38';
+  inp.value = '+38'; autoResize(inp);
   document.getElementById('mbtn').style.display = 'none';
   phoneInputHandler = () => {
     const f = formatPhone(inp.value);
@@ -571,7 +581,7 @@ function send() {
     }
     exitPhoneMode();
   }
-  inp.value = '';
+  inp.value = ''; autoResize(inp);
   if (step === 0) { q(t); return; }
   addMsg(t, true);
   if (step === 3) lead.name = t;
@@ -580,6 +590,8 @@ function send() {
   if (step > 5) return;
   botReply();
 }
+
+autoResize(inp);
 
 fetch('https://ipapi.co/json/')
   .then(r => r.json())
