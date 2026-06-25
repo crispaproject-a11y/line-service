@@ -302,7 +302,7 @@ body{
 </nav>
 
 <div class="hero">
-  <div class="city-line" id="city-line">Київ · Цілодобово</div>
+  <div class="city-line" id="city-line">Київ · 7:00 – 22:00</div>
   <h1 class="headline">Сантехнік,<br>який приїде<br><em>за 30 хвилин.</em></h1>
   <p class="sub">Аварійний виїзд <span>·</span> Встановлення <span>·</span> Ремонт</p>
   <div class="divider"></div>
@@ -644,7 +644,7 @@ fetch('https://ipapi.co/json/')
   .then(d => {
     const c = (d.city || '').toLowerCase();
     if (c.includes('odesa') || c.includes('одес')) {
-      document.getElementById('city-line').textContent = 'Одеса · Цілодобово';
+      document.getElementById('city-line').textContent = 'Одеса · 7:00 – 22:00';
       currentCity = 'Одеса';
     }
   }).catch(() => {});
