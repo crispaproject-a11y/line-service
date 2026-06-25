@@ -354,6 +354,7 @@ const qb   = document.getElementById('qb');
 
 let step = 0;
 let currentCity = 'Київ';
+let chatHistory = [];
 const lead = { problem: '', urgency: '', district: '', name: '', phone: '' };
 let phoneInputHandler = null;
 let recognition = null;
@@ -549,6 +550,42 @@ function botReply() {
   }, 900);
 }
 
+async function sendToAI(text) {
+  qb.innerHTML = '';
+  chatHistory.push({ role: 'user', content: text });
+  showTyping();
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: chatHistory }),
+    });
+    rmTyp();
+    if (!res.ok) throw new Error(await res.text());
+    const { content } = await res.json();
+    chatHistory.push({ role: 'assistant', content });
+    addMsg(content, false);
+  } catch (e) {
+    rmTyp();
+    addMsg('Вибачте, виникла помилка. Спробуйте ще раз або скористайтесь кнопками нижче.', false);
+    chatHistory.pop();
+    console.error('[ai]', e);
+  }
+  // Show CTA button after AI reply
+  qb.innerHTML = '';
+  const cta = document.createElement('button');
+  cta.className = 'qbtn';
+  cta.textContent = '📞 Залишити контакт для виклику';
+  cta.onclick = () => {
+    qb.innerHTML = '';
+    addMsg('Хочу залишити контакт', true);
+    lead.problem = chatHistory.find(m => m.role === 'user')?.content?.slice(0, 80) || 'AI-чат';
+    step = 3;
+    botReply();
+  };
+  qb.appendChild(cta);
+}
+
 function q(t) {
   qb.innerHTML = '';
   addMsg(t, true);
@@ -591,7 +628,7 @@ function send() {
     exitPhoneMode();
   }
   inp.value = ''; autoResize(inp);
-  if (step === 0) { q(t); return; }
+  if (step === 0) { addMsg(t, true); sendToAI(t); return; }
   addMsg(t, true);
   if (step === 3) lead.name = t;
   if (step === 4) lead.phone = t;
